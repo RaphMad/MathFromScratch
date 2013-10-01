@@ -1,4 +1,6 @@
-﻿namespace ImmutableNumbers.PrintingExtensions
+﻿using System.Text;
+
+namespace ImmutableNumbers.PrintingExtensions
 {
    /// <summary>
    /// Contains functions that allow printing of SetNaturals.
@@ -10,21 +12,23 @@
       /// </summary>
       public static string DetailledString(this SetNatural value)
       {
-         string representation = "{";
+         var representation = new StringBuilder("{");
 
          foreach (SetNatural element in value)
          {
-            representation += element.DetailledString();
-            representation += ",";
+            representation.Append(element.DetailledString());
+            representation.Append(",");
          }
 
          // truncate last ","
-         if (representation.EndsWith(","))
-            representation = representation.Remove(representation.Length - 1);
+         string representationString = representation.ToString();
 
-         representation += "}";
+         if (representationString.EndsWith(","))
+            representationString = representationString.Remove(representation.Length - 1);
 
-         return representation;
+         representationString += ("}");
+
+         return representationString;
       }
 
       /// <summary>
@@ -40,21 +44,23 @@
       /// </summary>
       public static string ShortString(this SetNatural value)
       {
-         string representation = "{";
+         var representation = new StringBuilder("{");
 
          foreach (SetNatural element in value)
          {
-            representation += element.NumericString();
-            representation += ",";
+            representation.Append(element.NumericString());
+            representation.Append(",");
          }
 
          // truncate last ","
-         if (representation.EndsWith(","))
-            representation = representation.Remove(representation.Length - 1);
+         string representationString = representation.ToString();
 
-         representation += "}";
+         if (representationString.EndsWith(","))
+            representationString = representationString.Remove(representation.Length - 1);
 
-         return representation;
+         representationString += ("}");
+
+         return representationString;
       }
    }
 }
