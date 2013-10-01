@@ -33,10 +33,11 @@
       /// <param name="elements">The elements.</param>
       private SetNatural(IEnumerable<SetNatural> elements)
       {
-         // accept IEnumerable since LINQ's Union() is nicer than ISet's UnionWith()
-         // assumption is that no duplicate elements exist (otherwise the duplicates would be discarded)
+         // accept IEnumerable since LINQ's Union() is nicer to work with than ISet's UnionWith()
          _elements = new HashSet<SetNatural>(elements);
       }
+
+      /* simply ignore the following bulky regions, only SetEquals() is somewhat interesting */
 
       #region printing and equality
 
@@ -75,6 +76,7 @@
       /// </returns>
       public override int GetHashCode()
       {
+         // valid choice for SetNaturals
          return _elements.Count;
       }
 
@@ -107,7 +109,6 @@
       #endregion
 
       #region ISet implementation
-
       public bool SetEquals(IEnumerable<SetNatural> other)
       {
          SetNatural otherSetNatural = other as SetNatural;
