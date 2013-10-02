@@ -13,6 +13,16 @@
    public sealed class SetNatural : IEquatable<SetNatural>, ISet<SetNatural>
    {
       /// <summary>
+      /// Memo table for successors.
+      /// </summary>
+      private static readonly IDictionary<SetNatural, SetNatural> SucMemo = new Dictionary<SetNatural, SetNatural>();
+
+      /// <summary>
+      /// Memo table for predecessors.
+      /// </summary>
+      private static readonly IDictionary<SetNatural, SetNatural> PredMemo = new Dictionary<SetNatural, SetNatural>();
+
+      /// <summary>
       /// Empty set - represents Zero.
       /// </summary>
       public static readonly SetNatural Zero = new SetNatural(new HashSet<SetNatural>());
@@ -76,7 +86,8 @@
       /// </returns>
       public override int GetHashCode()
       {
-         // valid choice for SetNaturals
+         // performance boost in hashed structures - valid choice for SetNaturals
+         // (but of course a bit of cheating)
          return _elements.Count;
       }
 
@@ -109,6 +120,7 @@
       #endregion
 
       #region ISet implementation
+
       public bool SetEquals(IEnumerable<SetNatural> other)
       {
          SetNatural otherSetNatural = other as SetNatural;
@@ -116,6 +128,7 @@
          if (otherSetNatural != null)
          {
             // performance boost - valid for SetNatural's by construction
+            // (but of course a bit of cheating)
             return _elements.Count == other.Count();
          }
 
@@ -231,8 +244,14 @@
       /// <returns>The successor.</returns>
       public static SetNatural Suc(SetNatural value)
       {
+         // use memoized value if available
+         if (SucMemo.ContainsKey(value))
+         {
+            return SucMemo[value];
+         }
+
          // the trick: Suc(n) = n UNION { n }
-         return new SetNatural(value.Union(InSet(value)));
+         return SucMemo[value] = new SetNatural(value.Union(InSet(value)));
       }
 
       /// <summary>
@@ -252,11 +271,19 @@
          if (value == Zero)
             throw new ArgumentException("value");
 
-         SetNatural predecessor = Zero;
+         // use memoized value if available
+         if (PredMemo.ContainsKey(value))
+         {
+            return PredMemo[value];
+         }
+
+         // assumption: PredMemo is internally ordered w.r.t. to adding time of elements
+         SetNatural predecessor = PredMemo.Any() ? PredMemo.Last().Value : Zero;
 
          // to check: better approach for Pred(), is this even allowed?
          while (Suc(predecessor) != value)
          {
+            PredMemo[Suc(predecessor)] = predecessor;
             predecessor = Suc(predecessor);
          }
 
@@ -293,6 +320,21 @@
 
          // recursive case: x + y = Suc(x + Pred(y))
          return Suc(x + Pred(y));
+      }
+
+      /// <summary>
+      /// Implements the operator ++.
+      /// </summary>
+      /// <param name="x">The x value.</param>
+      /// <returns>
+      /// The result of the operator.
+      /// </returns>
+      public static SetNatural operator ++(SetNatural x)
+      {
+         if (x == null)
+            throw new ArgumentNullException("x");
+
+         return Addition(x, One);
       }
 
       /// <summary>
