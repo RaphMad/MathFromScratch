@@ -67,9 +67,9 @@
          Console.WriteLine();
 
          // dont even try to imagine the set representation of this ;)
-         var sn1000 = sn10 ^ sn3;
+         var sn10000 = sn10 ^ sn2 ^ sn2;
 
-         Console.WriteLine(sn1000.NumericString());
+         Console.WriteLine(sn10000.NumericString());
          Console.WriteLine();
 
          Console.ReadKey();

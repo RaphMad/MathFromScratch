@@ -41,10 +41,9 @@
       /// Prevents a default instance of the <see cref="SetNatural"/> class from being created.
       /// </summary>
       /// <param name="elements">The elements.</param>
-      private SetNatural(IEnumerable<SetNatural> elements)
+      private SetNatural(HashSet<SetNatural> elements)
       {
-         // accept IEnumerable since LINQ's Union() is nicer to work with than ISet's UnionWith()
-         _elements = new HashSet<SetNatural>(elements);
+         _elements = elements;
       }
 
       /* simply ignore the following bulky regions, only SetEquals() is somewhat interesting */
@@ -251,15 +250,7 @@
          }
 
          // the trick: Suc(n) = n UNION { n }
-         return SucMemo[value] = new SetNatural(value.Union(InSet(value)));
-      }
-
-      /// <summary>
-      /// Encloses the given set in an additional set.
-      /// </summary>
-      private static ISet<SetNatural> InSet(SetNatural value)
-      {
-         return new HashSet<SetNatural> { value };
+         return SucMemo[value] = new SetNatural(new HashSet<SetNatural>(value) { value });
       }
 
       /// <summary>
