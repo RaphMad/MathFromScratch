@@ -10,7 +10,7 @@
    /// <summary>
    /// A set describing a  natural number.
    /// </summary>
-   public sealed class SetNatural : IEquatable<SetNatural>, ISet<SetNatural>
+   public sealed class SetNatural : ISet<SetNatural>, IEquatable<SetNatural>, IComparable<SetNatural>
    {
       /// <summary>
       /// Memo table for successors.
@@ -114,6 +114,22 @@
       public static bool operator !=(SetNatural first, SetNatural second)
       {
          return !(first == second);
+      }
+
+      /// <summary>
+      /// Compares this instance to another instance.
+      /// </summary>
+      /// <param name="other">The other.</param>
+      /// <returns>-1 if greater than, 0 if equal and 1 if less than this instance.</returns>
+      public int CompareTo(SetNatural other)
+      {
+         if (this < other)
+            return -1;
+
+         if (this > other)
+            return 1;
+
+         return 0;
       }
 
       #endregion
@@ -268,10 +284,16 @@
             return PredMemo[value];
          }
 
-         // assumption: PredMemo is internally ordered w.r.t. to adding time of elements
-         SetNatural predecessor = PredMemo.Any() ? PredMemo.Last().Value : Zero;
+         // searching for predecessors can begin at the last memoized value
+         SetNatural predecessor = Zero;
 
-         // to check: better approach for Pred(), is this even allowed?
+         // advance predecessor to the first value that has not yet been calculated
+         while (PredMemo.ContainsKey(Suc(predecessor)))
+         {
+            predecessor = Suc(predecessor);
+         }
+
+         // advance further until the desired value is reached, memoize newly calculated values
          while (Suc(predecessor) != value)
          {
             PredMemo[Suc(predecessor)] = predecessor;
@@ -390,6 +412,44 @@
 
          // recursive case: x ^ y = (x ^ Pred(y)) * x
          return (x ^ Pred(y)) * x;
+      }
+
+      /// <summary>
+      /// Implements the operator less than.
+      /// </summary>
+      /// <param name="x">The x.</param>
+      /// <param name="y">The y.</param>
+      /// <returns>
+      /// The result of the operator.
+      /// </returns>
+      public static bool operator <(SetNatural x, SetNatural y)
+      {
+         if (x == null)
+            throw new ArgumentNullException("x");
+
+         if (y == null)
+            throw new ArgumentNullException("y");
+
+         return x.IsSubsetOf(y);
+      }
+
+      /// <summary>
+      /// Implements the operator greater than.
+      /// </summary>
+      /// <param name="x">The x.</param>
+      /// <param name="y">The y.</param>
+      /// <returns>
+      /// The result of the operator.
+      /// </returns>
+      public static bool operator >(SetNatural x, SetNatural y)
+      {
+         if (x == null)
+            throw new ArgumentNullException("x");
+
+         if (y == null)
+            throw new ArgumentNullException("y");
+
+         return y.IsSubsetOf(x);
       }
    }
 }

@@ -78,6 +78,12 @@
          Console.WriteLine(sn10000.NumericString() + ", Time: " + stopwatch.ElapsedMilliseconds + "ms");
          Console.WriteLine();
 
+         Console.WriteLine(sn10000 < sn10);
+         Console.WriteLine(sn10000 > sn10);
+
+         Console.WriteLine(sn1 < SetNatural.Suc(sn1));
+         Console.WriteLine(sn1 > SetNatural.Pred(sn10000));
+
          Console.ReadKey();
       }
    }
