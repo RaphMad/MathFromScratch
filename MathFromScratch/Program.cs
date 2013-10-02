@@ -1,6 +1,7 @@
 ﻿namespace MathFromScratch
 {
    using System;
+   using System.Diagnostics;
    using ImmutableNumbers;
    using ImmutableNumbers.PrintingExtensions;
 
@@ -66,10 +67,15 @@
          Console.WriteLine(sn10.NumericString());
          Console.WriteLine();
 
-         // dont even try to imagine the set representation of this ;)
+         var stopwatch = new Stopwatch();
+         stopwatch.Start();
+
+         // do some number crunching, dont even try to imagine the set representation of this ;)
          var sn10000 = sn10 ^ sn2 ^ sn2;
 
-         Console.WriteLine(sn10000.NumericString());
+         stopwatch.Stop();
+
+         Console.WriteLine(sn10000.NumericString() + ", Time: " + stopwatch.ElapsedMilliseconds + "ms");
          Console.WriteLine();
 
          Console.ReadKey();
