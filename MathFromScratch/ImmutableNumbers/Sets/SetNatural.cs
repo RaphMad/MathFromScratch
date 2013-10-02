@@ -46,7 +46,7 @@
          _elements = elements;
       }
 
-      /* simply ignore the following bulky regions, only SetEquals() is somewhat interesting */
+      /* simply ignore the following bulky regions, only SetEquals() and IsSubsetOf() are somewhat interesting */
 
       #region printing and equality
 
@@ -85,9 +85,9 @@
       /// </returns>
       public override int GetHashCode()
       {
-         // performance boost in hashed structures - valid choice for SetNaturals
-         // (but of course a bit of cheating)
-         return _elements.Count;
+         // performance boost in hashed data structures - valid choice for SetNaturals
+         // (but of course a bit of cheating in the strict sense)
+         return Count;
       }
 
       /// <summary>
@@ -138,16 +138,32 @@
 
       public bool SetEquals(IEnumerable<SetNatural> other)
       {
+         // used for determining equality
          SetNatural otherSetNatural = other as SetNatural;
 
          if (otherSetNatural != null)
          {
             // performance boost - valid for SetNatural's by construction
-            // (but of course a bit of cheating)
-            return _elements.Count == other.Count();
+            // (but of course this is cheating since in set theory we would not know about a "Count"
+            //  - the fallback branch would work slower nevertheless)
+            return Count == other.Count();
          }
 
          return _elements.SetEquals(other);
+      }
+
+      public bool IsSubsetOf(IEnumerable<SetNatural> other)
+      {
+         // used for determining order of SetNaturals
+         SetNatural otherSetNatural = other as SetNatural;
+
+         if (otherSetNatural != null)
+         {
+            // performance boost - but same argument as above
+            return Count < other.Count();
+         }
+
+         return _elements.IsSubsetOf(other);
       }
 
       public IEnumerator<SetNatural> GetEnumerator()
@@ -188,11 +204,6 @@
       public void SymmetricExceptWith(IEnumerable<SetNatural> other)
       {
          _elements.SymmetricExceptWith(other);
-      }
-
-      public bool IsSubsetOf(IEnumerable<SetNatural> other)
-      {
-         return _elements.IsSubsetOf(other);
       }
 
       public bool IsSupersetOf(IEnumerable<SetNatural> other)
