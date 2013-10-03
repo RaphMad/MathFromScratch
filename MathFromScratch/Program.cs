@@ -70,7 +70,7 @@
          var stopwatch = new Stopwatch();
          stopwatch.Start();
 
-         // do some number crunching, dont even try to imagine the set representation of this ;)
+         // do some number crunching, dont even try to imagine the full set representation of this number ;)
          var sn10000 = sn10 ^ sn2 ^ sn2;
 
          stopwatch.Stop();
@@ -83,6 +83,8 @@
 
          Console.WriteLine(sn1 < SetNatural.Suc(sn1));
          Console.WriteLine(sn1 > SetNatural.Pred(sn10000));
+         Console.WriteLine(sn3 < sn3);
+         Console.WriteLine(sn2 > sn2);
 
          Console.ReadKey();
       }

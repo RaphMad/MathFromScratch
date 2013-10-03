@@ -48,7 +48,7 @@
 
       /* simply ignore the following bulky regions, only SetEquals() and IsSubsetOf() are somewhat interesting */
 
-      #region printing and equality
+      #region printing, equality and comparison
 
       /// <summary>
       /// Returns a <see cref="string"/> that represents this instance.
@@ -86,7 +86,7 @@
       public override int GetHashCode()
       {
          // performance boost in hashed data structures - valid choice for SetNaturals
-         // (but of course a bit of cheating in the strict sense)
+         // (but of course a bit of cheating in the strict sense, a similar trick is used in SetEquals() and IsSubsetOf())
          return Count;
       }
 
@@ -145,7 +145,7 @@
          {
             // performance boost - valid for SetNatural's by construction
             // (but of course this is cheating since in set theory we would not know about a "Count"
-            //  - the fallback branch would work slower nevertheless)
+            //  - the fallback branch would work without such knowledge, only slower nevertheless)
             return Count == other.Count();
          }
 
@@ -160,10 +160,24 @@
          if (otherSetNatural != null)
          {
             // performance boost - but same argument as above
-            return Count < other.Count();
+            return Count <= other.Count();
          }
 
          return _elements.IsSubsetOf(other);
+      }
+
+      public bool IsProperSubsetOf(IEnumerable<SetNatural> other)
+      {
+         // used for determining order of SetNaturals
+         SetNatural otherSetNatural = other as SetNatural;
+
+         if (otherSetNatural != null)
+         {
+            // performance boost - but same argument as above
+            return Count < other.Count();
+         }
+
+         return _elements.IsProperSubsetOf(other);
       }
 
       public IEnumerator<SetNatural> GetEnumerator()
@@ -214,11 +228,6 @@
       public bool IsProperSupersetOf(IEnumerable<SetNatural> other)
       {
          return _elements.IsProperSupersetOf(other);
-      }
-
-      public bool IsProperSubsetOf(IEnumerable<SetNatural> other)
-      {
-         return _elements.IsProperSubsetOf(other);
       }
 
       public bool Overlaps(IEnumerable<SetNatural> other)
@@ -441,7 +450,7 @@
          if (y == null)
             throw new ArgumentNullException("y");
 
-         return x.IsSubsetOf(y);
+         return x.IsProperSubsetOf(y);
       }
 
       /// <summary>
@@ -460,7 +469,7 @@
          if (y == null)
             throw new ArgumentNullException("y");
 
-         return y.IsSubsetOf(x);
+         return y.IsProperSubsetOf(x);
       }
    }
 }
